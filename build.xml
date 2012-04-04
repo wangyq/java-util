@@ -48,7 +48,7 @@
         <mkdir dir="${build.class.dir}"/>
         <mkdir dir="${dist.dir}"/>
         <tstamp/>
-        <echo message="${TSTAMP}"></echo>
+        <echo message="begin ant task at : ${DSTAMP}-${TSTAMP}"></echo>
     </target>
    
     <target name="all" depends="compile, doc, checkstyle"/>
