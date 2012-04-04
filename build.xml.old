@@ -1,0 +1,99 @@
+<?xml version="1.0"?>  
+<project name="java-util" basedir="." default="deploy">  
+    <property file="build.properties " />  
+  
+    <path id="master-classpath">  
+        <fileset dir="${web.dir}/WEB-INF/lib">  
+            <include name="*.jar" />  
+        </fileset>  
+        <fileset dir="${catalina.home}/common/lib ">  
+            <include name="*.jar"></include>  
+        </fileset>  
+        <fileset dir="${j2ee.lib}">  
+            <include name="*.jar"></include>  
+        </fileset>  
+        <pathelement path="${build.dir}" />  
+        <pathelement path="${test.dir}" />  
+    </path>  
+  
+    <target name="usage">  
+        <echo message="${name} build file" />  
+    </target>  
+  
+    <target name="build"  
+        description="Compile main source tree java files">  
+        <mkdir dir="${build.dir}" />  
+        <javac destdir="${build.dir}" source="1.5" target="1.5"  
+            debug="true" deprecation="false" optimize="false">  
+            <src path="${src.dir}" />  
+            <classpath refid="master-classpath" />  
+        </javac>  
+    </target>  
+  
+    <target name="deploy" depends="build"  
+        description="Deploy application">  
+        <copy todir="${deploy.dir}/${name}"  
+            preservelastmodified="true">  
+            <fileset dir="${web.dir}">  
+                <include name="**/*.*" />  
+            </fileset>  
+        </copy>  
+    </target>  
+  
+    <target name="deploywar" depends="build"  
+        description="Deploy application as a WAR file">  
+        <war destfile="${name}.war"  
+            webxml="${web.dir}/WEB-INF/web.xml">  
+            <fileset dir="${web.dir}">  
+                <include name="**/*.*" />  
+            </fileset>  
+        </war>  
+        <copy todir="${deploy.dir}" preservelastmodified="true">  
+            <fileset dir=".">  
+                <include name="*.war" />  
+            </fileset>  
+        </copy>  
+    </target>  
+  
+    <target name="clean" description="Clean output directories">  
+        <delete>  
+            <fileset dir="${build.dir}">  
+                <include name="**/*.class" />  
+            </fileset>  
+        </delete>  
+    </target>  
+  
+    <target name="undeploy" description="Un-Deploy application">  
+        <delete>  
+            <fileset dir="${deploy.dir}/${name}">  
+                <include name="**/*.*" />  
+            </fileset>  
+        </delete>  
+    </target>  
+  
+    <target name="dropTables">  
+        <echo message="DROP TABLES USING: ${db.driver} ${db.url}" />  
+        <sql driver="${db.driver}" url="${db.url}" userid="${db.user}"  
+            password="${db.pw}" onerror="continue">  
+            <classpath refid="master-classpath" />  
+            DROP TABLE products;  
+        </sql>  
+    </target>  
+  
+    <target name="createTables">  
+        <echo message="CREATE TABLES USING: ${db.driver} ${db.url}" />  
+        <sql driver="${db.driver}" url="${db.url}" userid="${db.user}"  
+            password="${db.pw}" onerror="continue"  
+            src="db/create_products.sql">  
+            <classpath refid="master-classpath" />  
+        </sql>  
+    </target>  
+  
+    <target name="loadData">  
+        <echo message="LOAD DATA USING: ${db.driver} ${db.url}" />  
+        <sql driver="${db.driver}" url="${db.url}" userid="${db.user}"  
+            password="${db.pw}" onerror="continue" src="db/load_data.sql">  
+            <classpath refid="master-classpath" />  
+        </sql>  
+    </target>  
+</project>
