@@ -1,6 +1,9 @@
-<?xml version="1.0"?>  
-<project name="java-util" basedir="." default="deploy">  
+<?xml version="1.0" encoding="UTF-8"?>  
+<project name="java-util" basedir="." default="deploy">
+    <!--  property file -->
     <property file="build.properties " />  
+    
+    <property name="version" value="1.0.0"/>  
   
     <path id="master-classpath">  
         <fileset dir="${web.dir}/WEB-INF/lib">  
