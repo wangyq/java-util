@@ -1,0 +1,47 @@
+###############
+#    folder   #
+###############
+build/
+lib/
+dist/
+
+###############
+#  fixed file #
+###############
+.gitignore
+*.exe
+*.txt
+*.def
+*.dsp
+*.lib
+*.doc
+*.dll
+*.lnt
+*.pm
+*.xls
+*.dbg
+*.DBG
+*.o
+*.plg
+*.keep
+*.dep
+*.jar
+
+###############
+#  temp file  #
+###############
+~*
+*.log
+*.cmm
+*.men
+*.ini
+*.fig
+*.cmp
+*.tmp
+*.swp
+
+###############
+#    script   #
+###############
+#*.bat
+
