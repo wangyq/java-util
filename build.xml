@@ -51,7 +51,7 @@
         <echo message="begin ant task at : ${DSTAMP}-${TSTAMP}"></echo>
     </target>
    
-    <target name="all" depends="compile, doc, checkstyle"/>
+    <target name="all" depends="test,jar,doc,checkstyle"/>
    
     <!-- 编译源文件 -->
     <target name="compile" depends="init">
@@ -64,7 +64,7 @@
     </target>
 
     <!-- 打包文件 -->
-    <target name="lib" depends="compile">
+    <target name="jar" depends="compile">
         <jar jarfile="${dist.dir}/${project-name}-${version}-${DSTAMP}-${TSTAMP}.jar" basedir="${build.class.dir}">
             <include name="**/*.class"/>
         </jar>
@@ -96,7 +96,7 @@
         <checkstyle config="${checkstyle.config}">
             <fileset dir="${src.dir}" includes="**/*.java"/>
             <formatter type="plain"/>
-            <formatter type="xml" toFile="${dist.dir}/checkstyle_errors.xml"/>
+            <formatter type="xml" toFile="${build.dir}/checkstyle_errors.xml"/>
         </checkstyle>
     </target>
    
