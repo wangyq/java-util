@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="java-util" default="all" basedir=".">
+
+    <property name="project-name" value="${ant.project.name}"/>
+    <property name="version" value="1.0.0"/>
+    <property name="src.dir" value="src"/>
+
+    <!-- doc directory -->
+    <property name="doc.dir" value="doc"/>
+    <property name="doc.api.dir" value="${doc.dir}/api"/>
+
+    <property name="lib.dir" value="lib"/>
+    <property name="dist.dir" value="dist"/>
+    <property name="build.dir" value="build"/>
+    <property name="build.class.dir" value="${build.dir}/classes"/>
+    
+    <!-- test directory -->
+    <property name="test.src.dir" value="test"/>
+    <property name="test.class.dir" value="${build.dir}/test"/>
+    <property name="test.report.dir" value="${build.dir}/report"/>
+    <property name="test.report.html.dir" value="${build.dir}/report/html"/>
+
+
+    <!-- checkstyle configuration -->
+    <property name="checkstyle.config" value="checkstyle.xml"/>
+    <taskdef resource="checkstyletask.properties"
+             classpath="${lib.dir}/checkstyle-all-3.1.jar"/>
+   
+   
+    <!-- 输出文档 -->
+    <property name="javadoc.package" value="com.*"/>
+   
+   
+    <!-- classpath -->
+    <path id="main-classpath">
+        <fileset dir="${lib.dir}">
+            <include name="**/*.jar"/>
+        </fileset>
+    </path>
+    <path id="test-classpath" cache="true">
+        <path refid="main-classpath"/>
+	<pathelement location="${build.class.dir}"/>
+    </path> 
+
+    <!-- init target --> 
+    <target name="init">
+        <mkdir dir="${build.dir}"/>
+        <mkdir dir="${build.class.dir}"/>
+        <mkdir dir="${dist.dir}"/>
+        <tstamp/>
+        <echo message="begin ant task at : ${DSTAMP}-${TSTAMP}"></echo>
+    </target>
+   
+    <target name="all" depends="test,jar,doc,checkstyle"/>
+   
+    <!-- 编译源文件 -->
+    <target name="compile" depends="init">
+        <mkdir dir="${build.class.dir}"/>
+
+        <javac destdir="${build.class.dir}" includeantruntime="on" deprecation="on">
+            <src path="${src.dir}"/>
+            <classpath refid="main-classpath"/>
+        </javac>
+    </target>
+
+    <!-- 打包文件 -->
+    <target name="jar" depends="compile">
+        <jar jarfile="${dist.dir}/${project-name}-${version}-${DSTAMP}-${TSTAMP}.jar" basedir="${build.class.dir}">
+            <include name="**/*.class"/>
+        </jar>
+    </target>
+   
+    <!--  产生javadoc -->
+    <target name="doc" depends="init">
+        <mkdir dir="${doc.dir}"/>
+        <mkdir dir="${doc.api.dir}"/>
+       
+        <javadoc packagenames="${javadoc.package}" sourcepath="${src.dir}"
+             private="yes" defaultexcludes="yes" destdir="${doc.api.dir}">
+            <classpath refid="main-classpath"/>
+        </javadoc>
+    </target>
+   
+    <!--  编译Junit 相关测试文件 -->
+    <target name="compile-test" depends="compile">
+        <mkdir dir="${test.class.dir}"/>
+       
+        <javac destdir="${test.class.dir}" includeantruntime="on" deprecation="on">
+            <src path="${test.src.dir}"/>
+            <classpath refid="test-classpath"/>
+        </javac>       
+    </target>
+   
+    <!-- 运行checkstyle检查代码规范 -->
+    <target name="checkstyle" depends="init">
+        <checkstyle config="${checkstyle.config}">
+            <fileset dir="${src.dir}" includes="**/*.java"/>
+            <formatter type="plain"/>
+            <formatter type="xml" toFile="${build.dir}/checkstyle_errors.xml"/>
+        </checkstyle>
+    </target>
+   
+    <!--  运行junit  -->
+    <target name="test" depends="compile-test">
+        <mkdir dir="${test.report.dir}"/>
+        <mkdir dir="${test.report.html.dir}"/>
+
+	<junit printsummary="yes" haltonfailure="yes">
+            <classpath refid="test-classpath"/>
+           
+            <formatter type="plain"/>
+       
+            <!-- test name="com.TestClassTest" haltonfailure="no" outfile="result"/ -->
+       
+            <batchtest todir="${test.report.dir}">
+                <fileset dir="${test.class.dir}" includes="**/Test*.class" />
+            </batchtest>
+        </junit>
+        <junitreport todir="${test.report.dir}" >
+		<fileset dir="${test.report.dir}">
+			<include name="TEST-*.xml" />
+		</fileset>
+		<report format="frames" todir="${test.report.html.dir}" />
+	</junitreport>
+    </target>
+   
+    <!-- 清除产生的类、junit相关类、文档 -->
+    <target name="clean">
+        <delete dir="${build.dir}"/>
+        <delete dir="${doc.api.dir}"/>
+    </target>
+   
+    <!-- 清除所有输出结果 -->
+    <target name="cleanall" depends="clean">
+        <delete dir="${doc.dir}"/>
+        <delete dir="${dist.dir}"/>
+    </target>
+</project> 
