@@ -4,14 +4,15 @@ import java.util.*;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.ReentrantLock;
 
-import com.sun.jmx.snmp.tasks.ThreadService;
-
 /**
  * 线程池的实现。仅供测试使用。
- * @author 
+ * @author siwind
  *
  */
 final public class ThreadPool {
+	/**
+	 * 是否结束线程池中的线程。
+	 */
 	boolean bExit = false;
 	
 	final ReentrantLock lock = new ReentrantLock();
@@ -23,9 +24,9 @@ final public class ThreadPool {
 	TheWorkerThread[] threads = null;
 	
 	/**
-	 * 是否发出了通知结束消息。
+	 * 是否需要发出了任务结束的 通知消息
 	 */
-	boolean bNotifyFinished = true;
+	boolean bNotifyFinished = false;
 	
 	/**
 	 * 管理线程的条件通知
@@ -35,7 +36,8 @@ final public class ThreadPool {
 	/**
 	 * 任务队列
 	 */
-	List<ITask> tasks = new ArrayList<ITask>();
+	//List<ITask> tasks = new ArrayList<ITask>(); //底层是Object[] array来实现的, 在头部删除的性能不好。
+	List<ITask> tasks = new LinkedList<ITask>();  //反复插入/删除时性能更好. Task队列中有反复的添加/删除操作
 	
 	/**
 	 * 
@@ -48,7 +50,7 @@ final public class ThreadPool {
 		threads = new TheWorkerThread[size];
 		
 		for(int i=0;i<size;i++){
-			threads[i] = new TheWorkerThread(this, i+1);
+			threads[i] = new TheWorkerThread(i+1);
 			threads[i].start();
 		}
 	}
@@ -88,7 +90,7 @@ final public class ThreadPool {
 		
 		lock.lock();  //first lock
 		
-		bNotifyFinished = false; //need notify finished!
+		bNotifyFinished = true; //need notify finished!
 		
 		tasks.addAll(l);
 		if( l.size() > 1 ){//唤醒多少线程?
@@ -102,6 +104,8 @@ final public class ThreadPool {
 	
 	/**
 	 * Close and destroy the threadpool
+	 * this method will finish all threads and would waiting all tasks to finished!
+	 * call awaitFinished() first before call this method will make sure all tasks have been finished!
 	 */
 	public void close(){
 		lock.lock();
@@ -118,68 +122,70 @@ final public class ThreadPool {
 			}
 		}
 	}
-}
-
-/**
- * Inner Thread to exec the task!
- * @author Administrator
- *
- */
-class TheWorkerThread extends Thread{
-	ThreadPool pool = null;
-	long thread_id = 0;
-	public TheWorkerThread(ThreadPool pool, int num){
-		this.pool = pool;
-		thread_id = num;
-	}
-	@Override
-	public void run() {
-		// TODO Auto-generated method stub
-		//this.tid = Thread.currentThread().getId();
-		//System.out.println("线程: " + tid + " 已经启动! ");
-		
-		while(true){
-			ITask task = null;
-			//////////////////
-			try{
-				pool.lock.lock();
-				while ( (pool.tasks.size()==0) && (!pool.bExit) ) {
-					if( !pool.bNotifyFinished ){
-						pool.bNotifyFinished = true;
-						pool.cond_master.signalAll();   //wake up all master'thread that waiting this condition!
-					}
-					//System.out.println("线程: " + thread_id + " 进入睡眠! ");
-					pool.cond.await();  //await now! and release the pool.lock
-				}//end of while waiting for task to do!
-				
-				if( pool.bExit ){
-					break;  //here will execute the finally block!
+	
+	//============================================
+			/**
+			 * Inner Thread to exec the task!
+			 * @author Administrator
+			 *
+			 */
+			class TheWorkerThread extends Thread{
+				//ThreadPool pool = null;
+				long thread_id = 0;
+				public TheWorkerThread( int num){
+					//this.pool = pool;
+					thread_id = num;
 				}
-				task = pool.tasks.remove(0);
-				
-			}catch (Exception e) {
-				// TODO: handle exception
-				e.printStackTrace();
-			}finally{
-				//System.out.println("线程: " + thread_id + " unlock! ");
-				pool.lock.unlock();
-			}
-			///////////////////
-			//do work here. and pool's lock is unlocked!
-			try {
-				if( null != task ){//avoid error!
-					//System.out.println("线程: " + thread_id + " 在执行! ");
-					task.start();  //run task now!
+				@Override
+				public void run() {
+					// TODO Auto-generated method stub
+					//this.tid = Thread.currentThread().getId();
+					//System.out.println("线程: " + tid + " 已经启动! ");
+					
+					while(true){
+						ITask task = null;
+						//////////////////
+						try{
+							lock.lock();
+							while ( (tasks.size()==0) && (!bExit) ) {
+								if( bNotifyFinished ){ //need signal master thread that all tasks have finished 
+									bNotifyFinished = false;  //already notify the message, so set it to false!
+									cond_master.signalAll();   //wake up all master'thread that waiting this condition!
+								}
+								//System.out.println("线程: " + thread_id + " 进入睡眠! ");
+								cond.await();  //await now! and release the pool.lock
+							}//end of while waiting for task to do!
+							
+							if( bExit ){
+								break;  //here will execute the finally block!
+							}
+							task = tasks.remove(0);
+							
+						}catch (Exception e) {
+							// TODO: handle exception
+							e.printStackTrace();
+						}finally{
+							//System.out.println("线程: " + thread_id + " unlock! ");
+							lock.unlock();
+						}
+						///////////////////
+						//do work here. and pool's lock is unlocked!
+						try {
+							if( null != task ){//avoid error!
+								//System.out.println("线程: " + thread_id + " 在执行! ");
+								task.start();  //run task now!
+							}
+						} catch (Exception e) {
+							// TODO: handle exception
+							e.printStackTrace();
+						}
+						finally{
+							//here!
+						}
+					}//end of while!
+					//System.out.println("线程: " + tid + " 已经退出! ");
 				}
-			} catch (Exception e) {
-				// TODO: handle exception
-				e.printStackTrace();
-			}
-			finally{
-				//here!
-			}
-		}//end of while!
-		//System.out.println("线程: " + tid + " 已经退出! ");
-	}
 
-}
+			}
+} //end of ThreadPool
+
