@@ -40,6 +40,7 @@
     <path id="test-classpath" cache="true">
         <path refid="main-classpath"/>
 	<pathelement location="${build.class.dir}"/>
+	<pathelement location="${test.class.dir}"/>
     </path> 
 
     <!-- init target --> 
@@ -51,7 +52,7 @@
         <echo message="begin ant task at : ${DSTAMP}-${TSTAMP}"></echo>
     </target>
    
-    <target name="all" depends="test,jar,doc,checkstyle"/>
+    <target name="all" depends="test,jar,doc"/>
    
     <!-- 编译源文件 -->
     <target name="compile" depends="init">

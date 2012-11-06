@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>  
 <project name="java-util" basedir="." default="deploy">
+
     <!--  property file -->
     <property file="build.properties " />  
     
