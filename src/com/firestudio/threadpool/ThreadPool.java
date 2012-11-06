@@ -168,7 +168,7 @@ class TheWorkerThread extends Thread{
 			//do work here. and pool's lock is unlocked!
 			try {
 				if( null != task ){//avoid error!
-					System.out.println("线程: " + thread_id + " 在执行! ");
+					//System.out.println("线程: " + thread_id + " 在执行! ");
 					task.start();  //run task now!
 				}
 			} catch (Exception e) {
