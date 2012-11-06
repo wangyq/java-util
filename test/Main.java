@@ -1,6 +1,8 @@
-package com.firestudio.threadpool;
+import com.firestudio.threadpool.*;
 
-public class TestPool {
+
+
+public class Main {
 
 	/**
 	 * @param args
@@ -9,7 +11,7 @@ public class TestPool {
 		// TODO Auto-generated method stub
 		try {
 
-			ThreadPool pool = new ThreadPool(3);
+			ThreadPool pool = new ThreadPool(2);
 			for (int i = 0; i < 10; i++) {
 				pool.addTask(new MyTask(i + 1),new MyTask(i + 11),new MyTask(i + 21));
 			}

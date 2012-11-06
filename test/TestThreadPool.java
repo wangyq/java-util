@@ -1,7 +1,7 @@
 /**
  * 
  */
-package com.firestudio.threadpool;
+
 
 import static org.junit.Assert.*;
 
@@ -10,6 +10,8 @@ import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
+
+import com.firestudio.threadpool.*;
 
 /**
  * @author siwind
@@ -56,7 +58,7 @@ public class TestThreadPool {
 
 			ThreadPool pool = new ThreadPool(2);
 			for (int i = 0; i < 10; i++) {
-				pool.addTask(new MyTask(i + 1),new MyTask(i + 11),new MyTask(i + 21));
+				pool.addTask(new MyTestTask(i + 1),new MyTestTask(i + 11),new MyTestTask(i + 21));
 			}
 
 			pool.awaitFinished();
@@ -65,6 +67,26 @@ public class TestThreadPool {
 			System.out.println("所有线程运行结束!");
 			
 		} catch (Exception e) {
+			// TODO: handle exception
+		}
+	}
+
+}
+class MyTestTask implements ITask {
+
+	int num = 0;
+
+	public MyTestTask(int n) {
+		this.num = n;
+	}
+
+	@Override
+	public void start() {
+		// TODO Auto-generated method stub
+		try{
+			System.out.println("Hello, task = " + num);
+		}
+		catch (Exception e) {
 			// TODO: handle exception
 		}
 	}
