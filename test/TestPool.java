@@ -27,7 +27,7 @@ public class TestPool {
 
 }
 
-class MyTask implements Task {
+class MyTask implements ITask {
 
 	int num = 0;
 

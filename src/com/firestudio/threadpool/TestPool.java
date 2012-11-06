@@ -11,12 +11,13 @@ public class TestPool {
 
 			ThreadPool pool = new ThreadPool(3);
 			for (int i = 0; i < 10; i++) {
-				pool.addTask(new MyTask(i + 1),new MyTask(i*20 + 1),new MyTask(i*40 + 1));
+				pool.addTask(new MyTask(i + 1),new MyTask(i + 11),new MyTask(i + 21));
 			}
 
-			Thread.currentThread().sleep(5000);
-			
+			pool.awaitFinished();
 			pool.close();  //destroy pool!
+			
+			System.out.println("所有线程运行结束!");
 			
 		} catch (Exception e) {
 			// TODO: handle exception
@@ -26,7 +27,7 @@ public class TestPool {
 
 }
 
-class MyTask implements Task {
+class MyTask implements ITask {
 
 	int num = 0;
 
@@ -38,9 +39,7 @@ class MyTask implements Task {
 	public void start() {
 		// TODO Auto-generated method stub
 		try{
-		
 			System.out.println("Hello, task = " + num);
-			Thread.currentThread().sleep(10);
 		}
 		catch (Exception e) {
 			// TODO: handle exception
