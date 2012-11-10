@@ -4,6 +4,9 @@ import java.util.*;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.ReentrantLock;
 
+import com.sun.org.apache.bcel.internal.generic.NEW;
+
+
 /**
  * 线程池的实现。仅供测试使用。
  * @author siwind
@@ -37,7 +40,8 @@ final public class ThreadPool {
 	 * 任务队列
 	 */
 	//List<ITask> tasks = new ArrayList<ITask>(); //底层是Object[] array来实现的, 在头部删除的性能不好。
-	List<ITask> tasks = new LinkedList<ITask>();  //反复插入/删除时性能更好. Task队列中有反复的添加/删除操作
+	//List<ITask> tasks = new LinkedList<ITask>();  //反复插入/删除时性能更好. Task队列中有反复的添加/删除操作
+	ArrayQueue<ITask> tasks = new ArrayQueue<ITask>();   //反复插入/删除时性能更好. Task队列中有反复的添加/删除操作
 	
 	/**
 	 * 
@@ -147,7 +151,7 @@ final public class ThreadPool {
 						//////////////////
 						try{
 							lock.lock();
-							while ( (tasks.size()==0) && (!bExit) ) {
+							while ( (tasks.isEmpty() ) && (!bExit) ) {
 								if( bNotifyFinished ){ //need signal master thread that all tasks have finished 
 									bNotifyFinished = false;  //already notify the message, so set it to false!
 									cond_master.signalAll();   //wake up all master'thread that waiting this condition!
@@ -159,7 +163,7 @@ final public class ThreadPool {
 							if( bExit ){
 								break;  //here will execute the finally block!
 							}
-							task = tasks.remove(0);
+							task = tasks.pop();
 							
 						}catch (Exception e) {
 							// TODO: handle exception
