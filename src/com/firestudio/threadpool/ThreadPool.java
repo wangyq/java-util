@@ -129,7 +129,7 @@ final public class ThreadPool {
 	
 	//============================================
 			/**
-			 * Inner Thread to exec the task!
+			 * Inner Thread to manage and execute  the user's task!
 			 * @author Administrator
 			 *
 			 */

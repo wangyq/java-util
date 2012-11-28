@@ -2,11 +2,17 @@ package com.firestudio.threadpool;
 
 import java.util.Collection;
 
+/**
+ * This class provide queue implementation using array to get higher performance 
+ * @author wangyq
+ *
+ * @param <T> general type of elements that queue holds 
+ */
 public class ArrayQueue<T> {
 	/**
 	 * default queue size
 	 */
-	final static int INIT_SIZE = 1;
+	final static int INIT_SIZE = 1024;
 	/**
 	 * 1 - mean 0.5 ( >>1)
 	 * 2 - mean 0.25 (>>2)
@@ -28,6 +34,9 @@ public class ArrayQueue<T> {
 	 */
 	private int tail = 0;
 	
+	/**
+	 * 
+	 */
 	private Object[]  data = null; 
 	
 	/**
@@ -75,6 +84,11 @@ public class ArrayQueue<T> {
 	public ArrayQueue(  ){
 		this(INIT_SIZE);
 	}
+	
+	/**
+	 * 
+	 * @param initSize
+	 */
 	public ArrayQueue( int initSize ){
 		if( initSize<=0 ){
 			throw new IllegalArgumentException("Illegal initSize: " + initSize);
