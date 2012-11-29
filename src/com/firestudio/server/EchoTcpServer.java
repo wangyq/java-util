@@ -18,6 +18,11 @@ public class EchoTcpServer {
 	private static final int TIMEOUT = 3000; // Wait timeout (milliseconds)
 	
 	/**
+	 * 
+	 */
+	private static int count = 0;
+	
+	/**
 	 * @param args
 	 */
 	public static void main(String[] args)  throws IOException{
@@ -57,7 +62,8 @@ public class EchoTcpServer {
 	              if (key.isAcceptable()) {
 	                //protocol.handleAccept(key);
 	            	//  handleAccept(key);
-	            	  new EchoProtocol().handleAccept(key);
+	            	  count++;
+	            	  new EchoProtocol(count).handleAccept(key);
 	            	  
 	              }
 	              // Client socket channel has pending data?
