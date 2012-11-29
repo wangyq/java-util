@@ -10,7 +10,6 @@ import java.nio.charset.Charset;
 import java.nio.charset.CharsetDecoder;
 import java.nio.charset.CharsetEncoder;
 
-import com.sun.org.apache.bcel.internal.generic.NEW;
 
 public class EchoProtocol implements Protocolable {
 
