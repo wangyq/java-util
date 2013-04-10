@@ -4,6 +4,7 @@
 build/
 lib/
 dist/
+bin/
 
 ###############
 #  fixed file #
@@ -26,6 +27,7 @@ dist/
 *.keep
 *.dep
 *.jar
+*.class
 
 ###############
 #  temp file  #
