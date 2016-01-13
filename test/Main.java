@@ -5,17 +5,23 @@ import com.firestudio.threadpool.*;
 public class Main {
 
 	public static void testQueue(){
-		ArrayQueue<Integer> a = new ArrayQueue<Integer>();
-		a.push(10);
-		a.push(-5);
-		a.push(250);
+		ArrayQueue<Integer> queue = new ArrayQueue<Integer>();
+
+		for( int i=10;i<100;i++){
+			queue.push(i);
+			queue.push(i+3);
+			queue.pop();
+		}
+		queue.push(10);
+		queue.push(-5);
+		queue.push(250);
 		Integer b[] = {1,3,5,7,9,11,13,15};
 		Integer c[] = {2,4,6,8,10};
-		a.addAll(b);
-		a.addAll(c);
-		
-		while(!a.isEmpty() ){
-			System.out.print(a.pop() + "  ");
+		queue.addAll(b);
+		queue.addAll(c);
+
+		while(!queue.isEmpty() ){
+			System.out.print(queue.pop() + "  ");
 		}
 		System.out.println();
 	}
