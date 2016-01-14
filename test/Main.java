@@ -1,6 +1,5 @@
-import java.util.ArrayList;
-
 import com.firestudio.threadpool.*;
+import com.firestudio.util.ArrayQueue;
 
 public class Main {
 
