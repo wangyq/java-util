@@ -5,13 +5,13 @@
 
 import static org.junit.Assert.*;
 
+import com.firestudio.util.ITask;
+import com.firestudio.util.ThreadPool;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
-
-import com.firestudio.threadpool.*;
 
 /**
  * @author siwind
@@ -48,7 +48,7 @@ public class TestThreadPool {
 	}
 
 	/**
-	 * Test method for {@link com.firestudio.threadpool.ThreadPool#addTask(java.util.List)}.
+	 * Test method for {@link ThreadPool#addTask(java.util.List)}.
 	 */
 	@Test
 	public void testAddTaskListOfITask() {

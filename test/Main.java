@@ -1,5 +1,6 @@
-import com.firestudio.threadpool.*;
 import com.firestudio.util.ArrayQueue;
+import com.firestudio.util.ITask;
+import com.firestudio.util.ThreadPool;
 
 public class Main {
 
@@ -61,7 +62,7 @@ class MyTask implements ITask {
 		this.num = n;
 	}
 
-	@Override
+	//@Override
 	public void start() {
 		// TODO Auto-generated method stub
 		try{
